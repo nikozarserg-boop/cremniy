@@ -45,6 +45,7 @@ private:
     QAction* m_rename{};
     QAction* m_delete{};
 
+    mutable QString m_contextPath;
     const QString m_root_path;
 };
 #endif // FILETREEPANEL_H

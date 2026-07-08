@@ -103,9 +103,16 @@ void FileTreePanel::setupConnections() {
 }
 
 QString FileTreePanel::currentPath() const {
-    const auto path = m_fileModel->filePath(getSourceIndex());
-    if (path.isEmpty()) return m_root_path;
-    return path;
+    if (!m_contextPath.isEmpty()) return m_contextPath;
+    const QModelIndexList selected = m_treeView->selectionModel()->selectedIndexes();
+    if (!selected.isEmpty()) {
+        const QModelIndex srcIdx = m_proxy->mapToSource(selected.first());
+        if (srcIdx.isValid()) {
+            const auto path = m_fileModel->filePath(srcIdx);
+            if (!path.isEmpty()) return path;
+        }
+    }
+    return m_root_path;
 }
 
 void FileTreePanel::open() {
@@ -140,9 +147,19 @@ QModelIndex FileTreePanel::getSourceIndex() const{
 void FileTreePanel::showMenu(const QPoint& point) const {
     const auto index = m_treeView->indexAt(point);
     const bool onItem = index.isValid();
+
+    if (onItem) {
+        const QModelIndex srcIdx = m_proxy->mapToSource(index);
+        m_contextPath = m_fileModel->filePath(srcIdx);
+    } else {
+        m_contextPath = m_root_path;
+    }
+
+    const bool isDir = onItem && m_fileModel->isDir(m_proxy->mapToSource(index));
+
     QMenu menu;
 
-    if (!onItem || m_fileModel->isDir(getSourceIndex())) {
+    if (!onItem || isDir) {
         menu.addAction(m_createDir);
         menu.addAction(m_createFile);
     }
@@ -153,5 +170,6 @@ void FileTreePanel::showMenu(const QPoint& point) const {
         menu.addAction(m_delete);
     }
 
-    if (! menu.isEmpty() ) menu.exec(m_treeView->viewport()->mapToGlobal(point));
+    if (!menu.isEmpty())
+        menu.exec(m_treeView->viewport()->mapToGlobal(point));
 }

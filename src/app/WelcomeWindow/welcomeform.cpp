@@ -61,7 +61,7 @@ public:
 
         if (selected || hovered) {
             painter->setPen(Qt::NoPen);
-            painter->setBrush(selected ? QColor("#2e4c82") : QColor("#262626"));
+            painter->setBrush(selected ? QColor("#264F78") : QColor("#2D2D2D"));
             painter->drawRoundedRect(itemRect, 6, 6);
         }
 
@@ -343,29 +343,29 @@ WelcomeForm::WelcomeForm(QWidget *parent)
     this->setStyleSheet(R"(
         QWidget#welcomeWindow,
         QWidget#welcomePage {
-            background: #262626;
+            background: #1E1E1E;
         }
 
         QWidget#welcomeSidebar {
-            background: #262626;
+            background: #1E1E1E;
         }
 
         QWidget#welcomeContent {
-            background: #262626;
+            background: #1E1E1E;
         }
 
         QWidget#welcomeProjectsPanel {
-            background: #1f1f1f;
+            background: #252526;
             border-top-left-radius: 6px;
         }
 
         QLabel#welcomeBrandName {
-            color: #ffffff;
+            color: #D4D4D4;
             font-size: 14px;
         }
 
         QLabel#welcomeBrandVersion {
-            color: rgba(255, 255, 255, 128);
+            color: rgba(212, 212, 212, 128);
             font-size: 10px;
         }
 
@@ -373,14 +373,14 @@ WelcomeForm::WelcomeForm(QWidget *parent)
         QPushButton#welcomeNavButton {
             border: none;
             border-radius: 8px;
-            color: #ffffff;
+            color: #D4D4D4;
             font-size: 14px;
             padding: 12px 24px;
             text-align: left;
         }
 
         QPushButton#welcomeNavSelected {
-            background: #2e4c82;
+            background: #264F78;
         }
 
         QPushButton#welcomeNavButton {
@@ -388,77 +388,77 @@ WelcomeForm::WelcomeForm(QWidget *parent)
         }
 
         QPushButton#welcomeNavButton:hover {
-            background: #333333;
+            background: #2D2D2D;
         }
 
         QPushButton#welcomeNavButton:disabled {
-            color: #ffffff;
+            color: #D4D4D4;
             background: transparent;
         }
 
         QPushButton#welcomeTopButton {
-            background: #1f1f1f;
+            background: #252526;
             border: none;
             border-radius: 6px;
-            color: #ffffff;
+            color: #D4D4D4;
             font-size: 14px;
             padding: 6px 12px;
         }
 
         QPushButton#welcomeTopButton:hover {
-            background: #2e4c82;
+            background: #264F78;
         }
 
         QPushButton#welcomeTopButton:disabled {
-            color: rgba(255, 255, 255, 90);
-            background: #1f1f1f;
+            color: rgba(212, 212, 212, 90);
+            background: #252526;
         }
 
         QListView#welcomeProjectsList {
-            background: #1f1f1f;
+            background: #252526;
             border: none;
             outline: none;
         }
 
         QWidget#welcomeCreateFormPanel {
-            background: #262626;
+            background: #1E1E1E;
         }
 
         QWidget#welcomeCreateButtonPanel {
-            background: #262626;
+            background: #1E1E1E;
         }
 
         QLabel#welcomeFormLabel {
-            color: #ffffff;
+            color: #D4D4D4;
             font-size: 14px;
             min-width: 94px;
         }
 
         QLabel#welcomeCreateInfo {
-            color: #bf3131;
+            color: #F44747;
             font-size: 14px;
             font-weight: bold;
         }
 
         QLineEdit#welcomeProjectInput,
         QComboBox#welcomeProjectCombo {
-            background: #1f1f1f;
+            background: #252526;
             border: none;
             border-radius: 6px;
-            color: #ffffff;
+            color: #D4D4D4;
             font-size: 14px;
             padding: 6px 12px;
-            selection-background-color: #2e4c82;
+            selection-background-color: #264F78;
         }
 
         QLineEdit#welcomeProjectInput:hover,
         QComboBox#welcomeProjectCombo:hover {
-            background: #242424;
+            background: #2A2D2E;
         }
 
         QLineEdit#welcomeProjectInput:focus,
         QComboBox#welcomeProjectCombo:focus {
-            border: 1px solid #2e4c82;
+            border: 1px solid #007ACC;
         }
 
         QComboBox#welcomeProjectCombo::drop-down {
@@ -473,10 +473,10 @@ WelcomeForm::WelcomeForm(QWidget *parent)
         }
 
         QComboBox#welcomeProjectCombo QAbstractItemView {
-            background: #1f1f1f;
-            border: 1px solid #333333;
-            color: #ffffff;
-            selection-background-color: #2e4c82;
+            background: #252526;
+            border: 1px solid #3C3C3C;
+            color: #D4D4D4;
+            selection-background-color: #264F78;
         }
     )");
 }
@@ -582,8 +582,8 @@ void WelcomeForm::L2BackButton()
 
 void WelcomeForm::L2CreateButton()
 {
-    const QString normalLabelStyle = "color: #ffffff; font-size: 14px;";
-    const QString errorLabelStyle = "color: #bf3131; font-size: 14px;";
+    const QString normalLabelStyle = "color: #D4D4D4; font-size: 14px;";
+    const QString errorLabelStyle = "color: #F44747; font-size: 14px;";
 
     info_label->setVisible(false);
     proj_name_label->setStyleSheet(normalLabelStyle);
