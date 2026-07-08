@@ -33,6 +33,8 @@
 #include <QTimer>
 #include <QTextBlock>
 #include <QTextDocument>
+#include <QToolTip>
+#include <QHelpEvent>
 #include <QTextLayout>
 
 #include <algorithm>
@@ -134,6 +136,24 @@ struct DisplayTextLayout {
 static bool isWordCharacter(QChar ch)
 {
     return ch.isLetterOrNumber() || ch == QLatin1Char('_');
+}
+
+static bool parseNumberToken(const QString &s, qulonglong &value)
+{
+    if (s.isEmpty())
+        return false;
+    bool ok = false;
+    if (s.startsWith("0x") || s.startsWith("0X"))
+        value = s.mid(2).toULongLong(&ok, 16);
+    else if (s.startsWith("0b") || s.startsWith("0B"))
+        value = s.mid(2).toULongLong(&ok, 2);
+    else if ((s.endsWith('h') || s.endsWith('H')) && s.size() > 1)
+        value = s.left(s.size() - 1).toULongLong(&ok, 16);
+    else if ((s.endsWith('o') || s.endsWith('O')) && s.size() > 1)
+        value = s.left(s.size() - 1).toULongLong(&ok, 8);
+    else
+        value = s.toULongLong(&ok, 10);
+    return ok;
 }
 
 DisplayTextLayout buildDisplayTextLayout(const QString& text, int tabSize)
@@ -537,6 +557,52 @@ CustomCodeEditor::~CustomCodeEditor()
 
 bool CustomCodeEditor::event(QEvent* event)
 {
+    if (event && event->type() == QEvent::ToolTip) {
+        auto* helpEvent = static_cast<QHelpEvent*>(event);
+        if (m_buffer && m_lineIndex->lineCount() > 0) {
+            const qint64 bytePos = bytePosFromPoint(helpEvent->pos());
+            const qint64 lineNum = lineFromBytePos(bytePos);
+            const QString lineText = displayTextForLine(lineNum);
+            const qint64 lineStart = lineVisibleStart(lineNum);
+            const qint64 rawCol = static_cast<int>(bytePos - lineStart);
+
+            if (rawCol >= 0 && rawCol <= lineText.size()) {
+                int col = static_cast<int>(rawCol);
+                int start = col;
+                int end = col;
+
+                while (start > 0 && isWordCharacter(lineText.at(start - 1)))
+                    --start;
+                while (end < lineText.size() && isWordCharacter(lineText.at(end)))
+                    ++end;
+
+                if (end > start) {
+                    const QString token = lineText.mid(start, end - start);
+                    qulonglong value;
+                    if (parseNumberToken(token, value)) {
+                        QString tooltip = QStringLiteral(
+                            "<div style='font-family: monospace; font-size: 12px;'>"
+                            "<b>%1</b><br>"
+                            "Dec: %2<br>"
+                            "Hex: 0x%3<br>"
+                            "Oct: 0%4<br>"
+                            "Bin: %5"
+                            "</div>")
+                            .arg(token.toHtmlEscaped())
+                            .arg(QString::number(value, 10))
+                            .arg(QString::number(value, 16).toUpper())
+                            .arg(QString::number(value, 8))
+                            .arg(QString::number(value, 2));
+                        QToolTip::showText(helpEvent->globalPos(), tooltip, viewport());
+                        return true;
+                    }
+                }
+            }
+        }
+        QToolTip::hideText();
+        return true;
+    }
+
     if (event && (event->type() == QEvent::ShortcutOverride || event->type() == QEvent::KeyPress)) {
         auto* keyEvent = static_cast<QKeyEvent*>(event);
         logKeyEvent("event", event, keyEvent, m_cursorBytePos);

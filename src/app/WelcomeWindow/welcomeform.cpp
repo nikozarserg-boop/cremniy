@@ -1,5 +1,6 @@
 #include "welcomeform.h"
 #include "app/IDEWindow/idewindow.h"
+#include "dialogs/settingsdialog.h"
 #include <qboxlayout.h>
 #include <qdir.h>
 #include <qlineedit.h>
@@ -175,8 +176,12 @@ WelcomeForm::WelcomeForm(QWidget *parent)
     sidebarLayout->addWidget(settingsNavButton);
     sidebarLayout->addWidget(docsNavButton);
     sidebarLayout->addStretch(1);
-    settingsNavButton->setEnabled(false);
     docsNavButton->setEnabled(false);
+
+    connect(settingsNavButton, &QPushButton::clicked, this, [this]() {
+        SettingsDialog dlg(this);
+        dlg.exec();
+    });
 
     QWidget *content = new QWidget(pageWelcome);
     content->setObjectName("welcomeContent");
