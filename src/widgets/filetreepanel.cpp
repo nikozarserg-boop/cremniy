@@ -17,6 +17,7 @@ FileTreePanel::FileTreePanel(QWidget* parent, QFileSystemModel* model, QSortFilt
           m_treeView(new QTreeView(this)),
           m_proxy(proxy),
           m_fileModel(model),
+          m_iconProvider(new IconProvider()),
           m_root_path(rootPath){
     m_proxy->setParent(this);
     m_fileModel->setParent(this);
@@ -26,9 +27,13 @@ FileTreePanel::FileTreePanel(QWidget* parent, QFileSystemModel* model, QSortFilt
     setupConnections();
 }
 
+FileTreePanel::~FileTreePanel() {
+    delete m_iconProvider;
+}
+
 void FileTreePanel::setupModel() const {
     m_fileModel->setRootPath(m_root_path);
-    m_fileModel->setIconProvider(new IconProvider());
+    m_fileModel->setIconProvider(m_iconProvider);
     m_proxy->setSourceModel(m_fileModel);
     m_treeView->setModel(m_proxy);
     m_treeView->setRootIndex(
@@ -98,9 +103,16 @@ void FileTreePanel::setupConnections() {
 }
 
 QString FileTreePanel::currentPath() const {
-    const auto path = m_fileModel->filePath(getSourceIndex());
-    if (path.isEmpty()) return m_root_path;
-    return path;
+    if (!m_contextPath.isEmpty()) return m_contextPath;
+    const QModelIndexList selected = m_treeView->selectionModel()->selectedIndexes();
+    if (!selected.isEmpty()) {
+        const QModelIndex srcIdx = m_proxy->mapToSource(selected.first());
+        if (srcIdx.isValid()) {
+            const auto path = m_fileModel->filePath(srcIdx);
+            if (!path.isEmpty()) return path;
+        }
+    }
+    return m_root_path;
 }
 
 void FileTreePanel::open() {
@@ -114,7 +126,7 @@ void FileTreePanel::remove() const {
     const QString body = tr("Are you sure you want to delete the file \"%1\"?").arg(m_fileModel->fileName(getSourceIndex()));
 
     QMessageBox confirmRemove(QMessageBox::Question, tr("Delete"), body, QMessageBox::NoButton);
-    [[maybe_unused]] const auto yes = confirmRemove.addButton(tr("Yes"), QMessageBox::YesRole);
+    const auto yes = confirmRemove.addButton(tr("Yes"), QMessageBox::YesRole);
     const auto no = confirmRemove.addButton(tr("No"), QMessageBox::NoRole);
     confirmRemove.exec();
 
@@ -135,9 +147,19 @@ QModelIndex FileTreePanel::getSourceIndex() const{
 void FileTreePanel::showMenu(const QPoint& point) const {
     const auto index = m_treeView->indexAt(point);
     const bool onItem = index.isValid();
+
+    if (onItem) {
+        const QModelIndex srcIdx = m_proxy->mapToSource(index);
+        m_contextPath = m_fileModel->filePath(srcIdx);
+    } else {
+        m_contextPath = m_root_path;
+    }
+
+    const bool isDir = onItem && m_fileModel->isDir(m_proxy->mapToSource(index));
+
     QMenu menu;
 
-    if (!onItem || m_fileModel->isDir(getSourceIndex())) {
+    if (!onItem || isDir) {
         menu.addAction(m_createDir);
         menu.addAction(m_createFile);
     }
@@ -148,5 +170,6 @@ void FileTreePanel::showMenu(const QPoint& point) const {
         menu.addAction(m_delete);
     }
 
-    if (! menu.isEmpty() ) menu.exec(m_treeView->viewport()->mapToGlobal(point));
+    if (!menu.isEmpty())
+        menu.exec(m_treeView->viewport()->mapToGlobal(point));
 }
