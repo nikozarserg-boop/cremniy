@@ -1,12 +1,13 @@
-#ifndef FILETREEPANEL_H
-#define FILETREEPANEL_H
+#pragma once
 
-#include <QTreeView>
 #include <QFileSystemModel>
 #include <QPointer>
 #include <QVBoxLayout>
 
+class QTreeView;
 class QSortFilterProxyModel;
+class QAction;
+class QPoint;
 class IconProvider;
 
 class FileTreePanel : public QWidget {
@@ -47,4 +48,3 @@ private:
     mutable QString m_contextPath;
     const QString m_root_path;
 };
-#endif // FILETREEPANEL_H

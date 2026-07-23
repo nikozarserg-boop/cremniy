@@ -1,5 +1,4 @@
-#ifndef GITMANAGER_H
-#define GITMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -34,7 +33,7 @@ public:
     /** @brief Получить путь к репозиторию */
     QString repoPath() const;
 
-    // Ветки
+    /* Ветки */
 
     /** @brief Получить список всех веток */
     QStringList branches() const;
@@ -54,7 +53,7 @@ public:
     /** @brief Переименовать ветку */
     bool renameBranch(const QString &oldName, const QString &newName);
 
-    // Коммиты
+    /* Коммиты */
 
     /** @brief Создать коммит */
     bool createCommit(const QString &message);
@@ -83,7 +82,7 @@ public:
     /** @brief Изменить последний коммит (amend) */
     bool amendCommit(const QString &message);
 
-    // Синхронизация
+    /* Синхронизация */
 
     /** @brief Отправить изменения (push) */
     bool push(const QString &remote = "origin", const QString &branch = "");
@@ -94,7 +93,7 @@ public:
     /** @brief Получить изменения без слияния (fetch) */
     bool fetch(const QString &remote = "origin");
 
-    // Слияние
+    /* Слияние */
 
     /** @brief Выполнить слияние ветки */
     bool merge(const QString &branchName);
@@ -105,7 +104,7 @@ public:
     /** @brief Получить список конфликтных файлов */
     QStringList conflictFiles() const;
 
-    // Индексация
+    /* Индексация */
 
     /** @brief Добавить файл в индекс */
     bool stageFile(const QString &filePath);
@@ -119,7 +118,7 @@ public:
     /** @brief Получить diff для staged изменений */
     QString stagedDiff() const;
 
-    // Репозиторий
+    /* Репозиторий */
 
     /** @brief Клонировать репозиторий */
     bool clone(const QString &url, const QString &path);
@@ -127,7 +126,7 @@ public:
     /** @brief Инициализировать репозиторий */
     bool init(const QString &path);
 
-    // Дополнительно
+    /* Дополнительно */
 
     /** @brief Получить статус репозитория */
     QString status() const;
@@ -168,5 +167,3 @@ private:
     /** @brief Создать подпись (signature) */
     git_signature *createSignature() const;
 };
-
-#endif // GITMANAGER_H

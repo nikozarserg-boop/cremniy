@@ -1,5 +1,4 @@
-#ifndef GITMENU_H
-#define GITMENU_H
+#pragma once
 
 #include "ui/MenuBar/basemenu.h"
 #include "core/git/gitmanager.h"
@@ -140,5 +139,3 @@ private:
     /** @brief Таймер автоматического отслеживания репозитория */
     QTimer m_repoWatchTimer;
 };
-
-#endif // GITMENU_H
