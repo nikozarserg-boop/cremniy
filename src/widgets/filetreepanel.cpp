@@ -1,5 +1,7 @@
 
 #include <QHeaderView>
+#include <QTreeView>
+#include <QAbstractItemView>
 #include <utility>
 
 #include "filetreepanel.h"

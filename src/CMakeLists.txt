@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.8.2 REQUIRED COMPONENTS Widgets LinguistTools Test Svg)
+find_package(Qt6 6.8.2 REQUIRED COMPONENTS Core Widgets Gui LinguistTools Test Svg)
 
 # Try vcpkg first, then fallback to pkg-config
 find_package(libgit2 CONFIG QUIET)
@@ -137,14 +137,14 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/MenuBar/Menus/)
 
 # Link libgit2 - different targets for vcpkg and pkg-config
 if(TARGET libgit2::libgit2)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Svg libgit2::libgit2)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets Qt6::Gui Qt6::Svg libgit2::libgit2)
 elseif(TARGET libgit2::libgit2package)
     # vcpkg target (older versions)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Svg libgit2::libgit2package)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets Qt6::Gui Qt6::Svg libgit2::libgit2package)
 else()
     # Fallback to pkg-config variables
     target_include_directories(${PROJECT_NAME} PRIVATE ${libgit2_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Svg ${libgit2_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets Qt6::Gui Qt6::Svg ${libgit2_LIBRARIES})
 endif()
 
 set(APP_LANGUAGES
